@@ -143,69 +143,16 @@ $meta_boxes[] = array(
 				'args' => array( ),         // Additional arguments for get_terms() function
 			),
 			'desc' => 'Categorías a las que pertenece'
-		)
-	)
-);
-
-// Second meta box
-$meta_boxes[] = array(
-	'id' => 'additional',
-	'title' => 'Additional Information',
-	'pages' => array( 'post', 'film', 'slider' ),
-
-	'fields' => array(
-		array(
-			'name' => 'Your thoughts about Deluxe Blog Tips',
-			'id' => $prefix . 'thoughts',
-			'type' => 'wysiwyg',             // Field type: WYSIWYG editor
-			'std' => '<b>It\'s great!</b>',
-			'desc' => 'Do you think so?',
 		),
 		array(
-			'name' => 'Upload your source code',
-			'desc' => 'Any modified code, or extending code',
-			'id' => $prefix . 'code',
-			'type' => 'file'                 // Field type: file upload
-		),
-		array(
-			'name' => 'Screenshots',
-			'desc' => 'Screenshots of problems, warnings, etc.',
-			'id' => $prefix . 'screenshot',
-			'type' => 'image'                // Field type: image upload
-		)
-	)
-);
-
-// Third meta box
-$meta_boxes[] = array(
-	'id' => 'survey',
-	'title' => 'Survey',
-	'pages' => array( 'post', 'slider', 'page' ),
-
-	'fields' => array(
-		array(
-			'name' => 'Your favorite color',
-			'id' => $prefix . 'color',
-			'type' => 'color'                // Field type: color
-		),
-		array(
-			'name' => 'Your hobby',
-			'id' => $prefix . 'hobby',
-			'type' => 'checkbox_list',       // Field type: checkbox list
-			'options' => array(              // Options of checkboxes, in format 'key' => 'value'
-				'reading' => 'Books',
-				'sport' => 'Gym, Boxing'
-			),
-			'desc' => 'What do you do in free time?'
-		),
-		array(
-			'name' => 'When do you get up?',
-			'id' => $prefix . 'getdown',
+			'name' => 'Hora',
+			'id' => $prefix . 'hora',
 			'type' => 'time',                // Field type: time
 			'format' => 'hh:mm:ss'           // Time format, default hh:mm. Optional. See: http://goo.gl/hXHWz
 		)
 	)
 );
+
 
 /**
  * Register meta boxes
