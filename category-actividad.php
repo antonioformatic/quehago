@@ -1,5 +1,5 @@
 <?php get_header(); ?>
-	<h1>Listado de Actividades...................modificadooo!.</h1>
+	<h1>Listado de Actividades....................</h1>
 	<div id="container">
 		<div id="content" role="main">
 			<h1 class="page-title"><?php
