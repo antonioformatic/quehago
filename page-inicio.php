@@ -1,5 +1,5 @@
 <li id="categories">
-	<h2><?php _e('Categorías:'); ?></h2>
+	<h2><?php _e('Categorías:'); bloginfo('url');?></h2>
 	<form action="<?php bloginfo('url'); ?>" method="get">
 		<div>
 			<?php

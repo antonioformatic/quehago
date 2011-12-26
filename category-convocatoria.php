@@ -1,5 +1,5 @@
 <?php get_header(); ?>
-	<h1>Listado de Actividades--------------</h1>
+	<h1>Convocatorias....................</h1>
 	<div id="container">
 		<div id="content" role="main">
 			<h1 class="page-title"><?php
@@ -10,8 +10,8 @@
 				if ( ! empty( $category_description ) ){
 					echo '<div class="archive-meta">' . $category_description . '</div>';
 				}
-				get_template_part( 'filtro', 'por-fecha');
-				get_template_part( 'content', 'actividad');
+
+				get_template_part( 'content', 'convocatoria' );
 			?>
 		</div><!-- #content -->
 	</div><!-- #container -->

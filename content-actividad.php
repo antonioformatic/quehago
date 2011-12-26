@@ -1,5 +1,29 @@
-<h1>Loop de Actividades:</h1>
-<?php if ( have_posts() ) while ( have_posts() ) : the_post(); ?>
+<h1>Loop de Actividades modificao:</h1>
+<?php
+$current_user = wp_get_current_user();
+$user_id = $current_user->ID;
+$filtro = get_user_meta( $user_id, "qh_filtro", true); 
+$args = array(
+	'post_type' => 'post',
+	'meta_query' => array(
+		'relation' => 'AND',	
+		array(
+			'key'     => 'qh_fecha',
+			'value'   => $filtro[0]['fechaDesde'],
+			'type'    => 'char',
+			'compare' => '>='
+		),
+		array(
+			'key'     => 'qh_fecha',
+			'value'   => $filtro[0]['fechaHasta'],
+			'type'    => 'char',
+			'compare' => '<='
+		)
+	)
+);
+$myQuery = new WP_Query( $args );
+?>
+<?php if ( $myQuery->have_posts() ) while ( $myQuery->have_posts() ) : $myQuery->the_post(); ?>
 
 				<div id="nav-above" class="navigation">
 					<div class="nav-previous"><?php previous_post_link( '%link', '<span class="meta-nav">' . _x( '&larr;', 'Previous post link', 'twentyten' ) . '</span> %title' ); ?></div>
@@ -15,6 +39,7 @@
 
 					<div class="entry-content">
 						<?php the_content(); ?>
+						<?php the_meta(); ?>
 						<?php wp_link_pages( array( 'before' => '<div class="page-link">' . __( 'Pages:', 'twentyten' ), 'after' => '</div>' ) ); ?>
 					</div><!-- .entry-content -->
 
@@ -49,3 +74,7 @@
 				<?php comments_template( '', true ); ?>
 
 <?php endwhile; // end of the loop. ?>
+<?php 
+	/*NO SE SI SE NECESITA ESTO AQUI!!!!!*/
+	wp_reset_postdata(); 
+?>

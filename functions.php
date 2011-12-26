@@ -90,6 +90,17 @@ if ( !class_exists( 'RWMB_Taxonomy_Field' ) ) {
  */
 $prefix = 'qh_';
 
+// Agrego $getTermParms para que busque solo los tipos de actividad:
+// Luego se la mando como parámetro al campo de tipo taxonomy
+$idObj = get_category_by_slug('actividad'); 
+$id = $idObj->term_id;
+$getTermParms = array(
+	'child_of'    =>$id,
+	'hide_empty'  =>0,
+	'hierarchical'=>1
+);
+////////////////////////////////////////////////////////////
+
 $meta_boxes = array( );
 
 // First meta box
@@ -126,21 +137,13 @@ $meta_boxes[] = array(
 			'desc' => 'Se realizará de veras o es sólo una idea?'
 		),
 		array(
-			'name' => 'Descripción',
-			'desc' => 'Descripción corta de la actividad',
-			'id' => $prefix . 'descripcion',
-			'type' => 'textarea',           // File type: textarea
-			'std' => '',
-			'style' => 'width: 200px; height: 100px'
-		),
-		array(
 			'name' => 'Categorías',
 			'id' => $prefix . 'categorias',
 			'type' => 'taxonomy',           // File type: taxonomy
 			'options' => array(
 				'taxonomy' => 'category',   // Taxonomy name
 				'type' => 'checkbox_list',  // How to show taxonomy: 'checkbox_list' (default) or 'select'. Optional
-				'args' => array( ),         // Additional arguments for get_terms() function
+				'args' => $getTermParms     // Additional arguments for get_terms() function
 			),
 			'desc' => 'Categorías a las que pertenece'
 		),
@@ -163,4 +166,238 @@ if ( class_exists( 'RW_Meta_Box' ) ) {
 		new RW_Meta_Box( $meta_box );
 	}
 }
+?>
+<?php
+/**
+ * Plugin Name: Example Widget
+ * Plugin URI: http://example.com/widget
+ * Description: A widget that serves as an example for developing more advanced widgets.
+ * Version: 0.1
+ * Author: Justin Tadlock
+ * Author URI: http://justintadlock.com
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
+
+/**
+ * Add function to widgets_init that'll load our widget.
+ * @since 0.1
+ */
+add_action( 'widgets_init', 'example_load_widgets' );
+
+/**
+ * Register our widget.
+ * 'Example_Widget' is the widget class used below.
+ *
+ * @since 0.1
+ */
+function example_load_widgets() {
+	register_widget( 'Example_Widget' );
+}
+
+/**
+ * Example Widget class.
+ * This class handles everything that needs to be handled with the widget:
+ * the settings, form, display, and update.  Nice!
+ *
+ * @since 0.1
+ */
+class Example_Widget extends WP_Widget {
+
+	/**
+	 * Widget setup.
+	 */
+	function Example_Widget() {
+		/* Widget settings. */
+		$widget_ops = array( 
+			'classname' => 'example', 
+			'description' => __('An example widget that displays a person\'s name and sex.', 'example') 
+		);
+
+		/* Widget control settings. */
+		$control_ops = array( 
+			'width' => 300, 
+			'height' => 350, 
+			'id_base' => 'example-widget' 
+		);
+
+		/* Create the widget. */
+		$this->WP_Widget( 
+			'example-widget',
+			 __('Example Widget', 'example'), 
+			$widget_ops, 
+			$control_ops 
+		);
+	}
+
+	/**
+	 * How to display the widget on the screen.
+	 */
+	function widget( $args, $instance ) {
+		extract( $args );
+
+		/* Our variables from the widget settings. */
+		$title = apply_filters('widget_title', $instance['title'] );
+		$name = $instance['name'];
+		$sex = $instance['sex'];
+		$show_sex = isset( $instance['show_sex'] ) ? $instance['show_sex'] : false;
+
+		/* Before widget (defined by themes). */
+		echo $before_widget;
+
+		/* Display the widget title if one was input (before and after defined by themes). */
+		if ( $title )
+			echo $before_title . $title . $after_title;
+
+		/* Display name from widget settings if one was input. */
+		if ( $name )
+			printf( '<p>' . __('Hello. My name is %1$s.', 'example') . '</p>', $name );
+
+		/* If show sex was selected, display the user's sex. */
+		if ( $show_sex )
+			printf( '<p>' . __('I am a %1$s.', 'example.') . '</p>', $sex );
+
+		/* After widget (defined by themes). */
+		echo $after_widget;
+		$this->form($instance);
+	}
+
+	/**
+	 * Update the widget settings.
+	 */
+	function update( $new_instance, $old_instance ) {
+		$instance = $old_instance;
+
+		/* Strip tags for title and name to remove HTML (important for text inputs). */
+		$instance['title'] = strip_tags( $new_instance['title'] );
+		$instance['name'] = strip_tags( $new_instance['name'] );
+
+		/* No need to strip tags for sex and show_sex. */
+		$instance['sex'] = $new_instance['sex'];
+		$instance['show_sex'] = $new_instance['show_sex'];
+
+		return $instance;
+	}
+
+	/**
+	 * Displays the widget settings controls on the widget panel.
+	 * Make use of the get_field_id() and get_field_name() function
+	 * when creating your form elements. This handles the confusing stuff.
+	 */
+	function form( $instance ) {
+
+		/* Set up some default widget settings. */
+		$defaults = array( 'title' => __('Example', 'example'), 'name' => __('John Doe', 'example'), 'sex' => 'male', 'show_sex' => true );
+		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
+
+		<!-- Widget Title: Text Input -->
+		<p>
+			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e('Title:', 'hybrid'); ?></label>
+			<input id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" style="width:100%;" />
+		</p>
+
+		<!-- Your Name: Text Input -->
+		<p>
+			<label for="<?php echo $this->get_field_id( 'name' ); ?>"><?php _e('Your Name:', 'example'); ?></label>
+			<input id="<?php echo $this->get_field_id( 'name' ); ?>" name="<?php echo $this->get_field_name( 'name' ); ?>" value="<?php echo $instance['name']; ?>" style="width:100%;" />
+		</p>
+
+		<!-- Sex: Select Box -->
+		<p>
+			<label for="<?php echo $this->get_field_id( 'sex' ); ?>"><?php _e('Sex:', 'example'); ?></label> 
+			<select id="<?php echo $this->get_field_id( 'sex' ); ?>" name="<?php echo $this->get_field_name( 'sex' ); ?>" class="widefat" style="width:100%;">
+				<option <?php if ( 'male' == $instance['format'] ) echo 'selected="selected"'; ?>>male</option>
+				<option <?php if ( 'female' == $instance['format'] ) echo 'selected="selected"'; ?>>female</option>
+			</select>
+		</p>
+
+		<!-- Show Sex? Checkbox -->
+		<p>
+			<input class="checkbox" type="checkbox" <?php checked( $instance['show_sex'], true ); ?> id="<?php echo $this->get_field_id( 'show_sex' ); ?>" name="<?php echo $this->get_field_name( 'show_sex' ); ?>" /> 
+			<label for="<?php echo $this->get_field_id( 'show_sex' ); ?>"><?php _e('Display sex publicly?', 'example'); ?></label>
+		</p>
+
+	<?php
+	}
+}
+
+?>
+<?php
+add_action( 'widgets_init', 'setupFiltersWidget' );
+
+/**
+ * Register our widget.
+ * 'Example_Widget' is the widget class used below.
+ *
+ * @since 0.1
+ */
+function setupFiltersWidget() {
+	register_widget( 'QHFilter' );
+}
+
+/**
+ * Example Widget class.
+ * This class handles everything that needs to be handled with the widget:
+ * the settings, form, display, and update.  Nice!
+ *
+ * @since 0.1
+ */
+class QHFilter extends WP_Widget {
+
+	function Fecha_Widget() {
+		$widget_ops = array( 
+			'classname' => 'example', 
+			'description' => __('Filtrando datos', 'example') 
+		);
+
+		$control_ops = array( 
+			'width' => 40, 
+			'height' => 10, 
+			'id_base' => 'filters-widget' 
+		);
+
+		/* Create the widget. */
+		$this->WP_Widget( 
+			'filters-widget',
+			 __('Filters Widget', 'example'), 
+			$widget_ops, 
+			$control_ops 
+		);
+	}
+
+	function widget( $args, $instance ) {
+		$this->form($instance);
+	}
+
+	function update( $new_instance, $old_instance ) {
+		$instance = $old_instance;
+		$instance['desde'] = strip_tags( $new_instance['desde'] );
+		return $instance;
+	}
+
+	function form( $instance ) {
+		$defaults = array( 
+			'desde'      => '01/01/2011' 
+		);
+		$instance = wp_parse_args( (array) $instance, $defaults ); 
+		?>
+		<p>
+			<label 
+				for="<?php echo $this->get_field_id( 'desde' ); ?>">
+					<?php _e('Desde:', 'hybrid'); ?>
+			</label>
+			<input 
+				id   ="<?php echo $this->get_field_id( 'desde' );   ?>" 
+				name ="<?php echo $this->get_field_name( 'desde' ); ?>" 
+				value="<?php echo $instance['desde'];               ?>" 
+			/>
+		</p>
+
+
+	<?php
+	}
+}
+
 ?>

@@ -1,0 +1,46 @@
+Los posibles filtros se van a guardar en metadata del usuario actual. De este modo, cada usuario tiene sus busquedas guardadas siempre como las dejó.
+
+Así que tendremos un conjunto abierto de metadata para cada usuario, a saber:
+	-filter-date-min
+	-filter-date-max
+	-filter-time-min
+	-filter-time-max
+	-filter-price-min
+	-filter-price-max
+	-filter-map-center
+	-filter-map-distance
+	-filter-categories
+	-filter-participants
+
+
+Los botones que tendrá la página a filtrar serán:
+	-Por fechas
+		-Si se dejan en blanco significa "siempre", es decir mayor que desde o menor que hasta
+		-Si las dos están en blanco no se filtra
+		-Por defecto filtra el día de hoy
+	-Por lugar
+		-Si el lugar y la distancia estan en blanco no hay filtro
+		-Si solo hay distancia no hay filtro
+		-Si solo hay lugar se toma 0 como distancia
+	-Por precio
+		-Funciona como las fechas. Salvo precios negativos que no se toman
+	-Por participantes
+		-Lista de participantes a buscar.
+		-Filtra las que tengan todos los de la lista
+		-Si esta en blanco no se filtra
+	-Por organizador
+		-Si no está en blanco se buscan los de ese organizador
+	-Por categorías
+		-Las de esa lista de categorías
+		-Si está en blanco salen todas
+		-Si es un usuario, se toman las categorías de sus baremos
+			-Las que tengan la mayor puntuación entre -3 y +3
+			-El usuario tendrá un valor de "tolerancia" en sus metadata, para indicar que está dispuesto a soportar cosas que no le interesan si no hay nada que le interese. Así, con una toleráncia de -3, saldría todo lo que tiene, incluso lo que no tiene, con una de +3 solo lo que tiene y además le gusta. Pensar esta idea bien.
+
+
+Cosas que podemos filtrar:
+	-Actividades
+	-Mis convocatorias
+	-Mi agenda
+
+Cada uno de estos conjuntos, se obtiene de $posts, que es la que los filtros modifican
