@@ -1,16 +1,18 @@
 Los posibles filtros se van a guardar en metadata del usuario actual. De este modo, cada usuario tiene sus busquedas guardadas siempre como las dejó.
 
-Así que tendremos un conjunto abierto de metadata para cada usuario, a saber:
-	-filter-date-min
-	-filter-date-max
-	-filter-time-min
-	-filter-time-max
-	-filter-price-min
-	-filter-price-max
-	-filter-map-center
-	-filter-map-distance
-	-filter-categories
-	-filter-participants
+Así que tendremos un metadata para cada usuario, llamado qh-filter 
+
+Los campos que tendrá el array que guardamos en qh-filter son:
+	-date-min
+	-date-max
+	-time-min
+	-time-max
+	-price-min
+	-price-max
+	-map-center
+	-map-distance
+	-categories
+	-participants
 
 
 Los botones que tendrá la página a filtrar serán:
@@ -43,4 +45,3 @@ Cosas que podemos filtrar:
 	-Mis convocatorias
 	-Mi agenda
 
-Cada uno de estos conjuntos, se obtiene de $posts, que es la que los filtros modifican

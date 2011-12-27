@@ -10,7 +10,7 @@
 				if ( ! empty( $category_description ) ){
 					echo '<div class="archive-meta">' . $category_description . '</div>';
 				}
-				get_template_part( 'filtro', 'por-fecha');
+				get_template_part( 'filtro', 'multiple');
 				get_template_part( 'content', 'actividad');
 			?>
 		</div><!-- #content -->
