@@ -120,6 +120,12 @@ $meta_boxes[] = array(
 			'std' => ''                   // Default value, optional
 		),
 		array(
+			'name' => 'Organizador',
+			'id' => $prefix . 'organizador',
+			'type' => 'text',               // File type: date
+			'std' => ''                   // Default value, optional
+		),
+		array(
 			'name' => 'Fecha',
 			'id' => $prefix . 'fecha',
 			'type' => 'date',               // File type: date

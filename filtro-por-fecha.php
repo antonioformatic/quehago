@@ -10,6 +10,7 @@ Agregar aquí un menú que muestre solamente el filtro correcto
 		$filtro[0]['fechaDesde'] = $_POST['fechaDesde'];
 		$filtro[0]['fechaHasta'] = $_POST['fechaHasta'];
 		update_user_meta($user_id, "qh_filtro", $filtro); 
+		echo "Recibido el post";
 	}else{
 		//Si no lo recibo cargo datos desde el metadata qh_filtro 
 		$current_user = wp_get_current_user();
@@ -17,7 +18,9 @@ Agregar aquí un menú que muestre solamente el filtro correcto
 		$filtro = get_user_meta( $user_id, "qh_filtro"); 
 		$desde = $filtro[0]['fechaDesde'];
 		$hasta = $filtro[0]['fechaHasta'];
+		echo "Obtenido el valor: " . $desde . " y " . $hasta;
 	}
+	print_r($filtro);
 ?>
 <form action="" method="post">
 	<input type="text" name="fechaDesde" value="<?php echo $desde; ?>" />
