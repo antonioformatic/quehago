@@ -1,9 +1,11 @@
 <h1>Loop de Actividades modificado:</h1>
 <?php
-echo "----------------------------------------<br />";
 $current_user = wp_get_current_user();
 $user_id = $current_user->ID;
 $filter = get_user_meta( $user_id, "qh_filter", true); 
+echo "Filtro:<p />";
+print_r($filter);
+echo "<p />-------------------------------------------------------------";
 /*
 	Campos del array qh-filter que es un metadato del usuario. 
 	Va todo el array en un solo texto, serializado.
@@ -34,50 +36,50 @@ $filter = get_user_meta( $user_id, "qh_filter", true);
 $meta_query =  array(
 	'relation' => 'AND'
 );
-if($filter[0]['date-min'] != ''){
+if($filter[0]['dateMin'] != ''){
 	$meta_query[] = array( 
 		'key'     => 'qh_fecha',
-		'value'   => $filter[0]['date-min'],
+		'value'   => $filter[0]['dateMin'],
 		'type'    => 'DATE',
 		'compare' => '>='
 	);
 }
-if($filter[0]['date-max'] != ''){
+if($filter[0]['dateMax'] != ''){
 	$meta_query[] = array(
 		'key'     => 'qh_fecha',
-		'value'   => $filter[0]['date-max'],
+		'value'   => $filter[0]['dateMax'],
 		'type'    => 'DATE',
 		'compare' => '<='
 	);
 }
-if($filter[0]['time-min'] != ''){
+if($filter[0]['timeMin'] != ''){
 	$meta_query[] = array( 
 		'key'     => 'qh_hora',
-		'value'   => $filter[0]['time-min'],
+		'value'   => $filter[0]['timeMin'],
 		'type'    => 'TIME',
 		'compare' => '>='
 	);
 }
-if($filter[0]['time-max'] != ''){
+if($filter[0]['timeMax'] != ''){
 	$meta_query[] = array(
 		'key'     => 'qh_hora',
-		'value'   => $filter[0]['time-max'],
+		'value'   => $filter[0]['timeMax'],
 		'type'    => 'TIME',
 		'compare' => '<='
 	);
 }
-if($filter[0]['price-min'] != 0){
+if($filter[0]['priceMin'] != 0){
 	$meta_query[] = array( 
 		'key'     => 'qh_price',
-		'value'   => $filter[0]['price-min'],
+		'value'   => $filter[0]['priceMin'],
 		'type'    => 'NUMERIC',
 		'compare' => '>='
 	);
 }
-if($filter[0]['price-max'] != 0){
+if($filter[0]['priceMax'] != 0){
 	$meta_query[] = array(
 		'key'     => 'qh_price',
-		'value'   => $filter[0]['price-max'],
+		'value'   => $filter[0]['priceMax'],
 		'type'    => 'NUMERIC',
 		'compare' => '<='
 	);
@@ -114,7 +116,9 @@ $args = array(
 	'meta_query' => $meta_query,
 	'tax_query'  => $tax_query
 );
+echo "Args: <p />";
 print_r($args);
+echo "<p />----------------------------------------------------------";
 $myQuery = new WP_Query( $args );
 ?>
 <?php if ( $myQuery->have_posts() ) while ( $myQuery->have_posts() ) : $myQuery->the_post(); ?>
