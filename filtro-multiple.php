@@ -1,4 +1,4 @@
-<h2>Filtro por fecha<h2>
+<h2>Filtros<h2>
 <?php
 	$current_user = wp_get_current_user();
 	$user_id = $current_user->ID;
@@ -33,7 +33,17 @@
 		update_user_meta($user_id, "qh_filter", $filter); 
 	}
 ?>
-<div id="dateFilter">
+<div id="filterMenu">
+<button onclick='jQuery("#dateFilter").toggle();'>Fecha</button>
+<button onclick='jQuery("#timeFilter").toggle();'>Hora</button>
+<button onclick='jQuery("#priceFilter").toggle();'>Precio</button>
+<button onclick='jQuery("#mapFilter").toggle();'>Lugar</button>
+<button onclick='jQuery("#organizerFilter").toggle();'>Organizador</button>
+<button onclick='jQuery("#categoriesFilter").toggle();'>Categoría</button>
+<button onclick='jQuery("#participantsFilter").toggle();'>Participantes</button>
+</div>
+<div style="display:'none';">
+<div id="dateFilter" style="display:none;">
 	<form action="" method="post">
 		Desde fecha<input type="text" name="dateMin" value="<?php echo $filter[0]['dateMin']; ?>" />
 		Hasta fecha<input type="text" name="dateMax" value="<?php echo $filter[0]['dateMax']; ?>" />
@@ -41,7 +51,7 @@
 		<input type="hidden" name="dateFilter" />
 	</form>
 </div>
-<div id="timeFilter">
+<div id="timeFilter" style="display:none;">
 	<form action="" method="post">
 		Desde hora<input type="text" name="timeMin" value="<?php echo $filter[0]['timeMin']; ?>" />
 		Hasta hora<input type="text" name="timeMax" value="<?php echo $filter[0]['timeMax']; ?>" />
@@ -49,7 +59,7 @@
 		<input type="hidden" name="timeFilter" />
 	</form>
 </div>
-<div id="priceFilter">
+<div id="priceFilter" style="display:none;">
 	<form action="" method="post">
 		Desde precio<input type="text" name="priceMin" value="<?php echo $filter[0]['priceMin']; ?>" />
 		Hasta precio<input type="text" name="priceMax" value="<?php echo $filter[0]['priceMax']; ?>" />
@@ -57,7 +67,7 @@
 		<input type="hidden" name="priceFilter" />
 	</form>
 </div>
-<div id="mapFilter">
+<div id="mapFilter" style="display:none;">
 	<form action="" method="post">
 		Centro<input type="text" name="mapCenter" value="<?php echo $filter[0]['mapCenter']; ?>" />
 		Radio<input type="text" name="mapRadio"  value="<?php echo $filter[0]['mapRadio']; ?>" />
@@ -65,25 +75,25 @@
 		<input type="hidden" name="mapFilter" />
 	</form>
 </div>
-<div id="organizerFilter">
+<div id="organizerFilter" style="display:none;">
 	<form action="" method="post">
 		Organizador<input type="text" name="organizer" value="<?php echo $filter[0]['organizer']; ?>" />
 		<input type="submit" value="Filtrar" />
 		<input type="hidden" name="organizerFilter" />
 	</form>
 </div>
-<div id="categoriesFilter">
+<div id="categoriesFilter" style="display:none;">
 	<form action="" method="post">
 		Categorías<input type="text" name="categories" value="<?php echo $filter[0]['categories']; ?>" />
 		<input type="submit" value="Filtrar" />
 		<input type="hidden" name="categoriesFilter" />
 	</form>
 </div>
-<div id="participantsFilter">
+<div id="participantsFilter" style="display:none;">
 	<form action="" method="post">
 		Participantes<input type="text" name="participants" value="<?php echo $filter[0]['participants']; ?>" />
 		<input type="submit" value="Filtrar" />
 		<input type="hidden" name="participantsFilter" />
 	</form>
 </div>
-
+</div>

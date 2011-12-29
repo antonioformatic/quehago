@@ -119,6 +119,49 @@ $args = array(
 echo "Args: <p />";
 print_r($args);
 echo "<p />----------------------------------------------------------";
+
+
+add_filter('posts_where_paged', 'miWhere' );
+function miWhere( $where) {
+	return $where . " and wp_postmeta.meta_key = 'qh_position'";
+}
+add_filter('posts_join_paged', 'miJoin' );
+function miJoin( $joins) {
+	global $wpdb;
+	$new_joins = array(
+		"LEFT JOIN wp_postmeta ON wp_postmeta.post_id = wp_posts.ID",
+		$joins
+	);
+	return implode( ' ', $new_joins);
+}
+add_filter('posts_fields', 'miFields' );
+
+function miFields( $fields) {
+	$myLat = 10;
+	$myLng = 20;
+	return $fields
+	.", wp_postmeta.meta_key "
+	.", wp_postmeta.meta_value as coords" ;
+	.",( 
+		6371
+		* 
+		acos( 
+			cos( radians($myLat) ) 
+			* 
+			cos( radians( coords['lat'] ) ) 
+			* 
+			cos( 
+				radians( coords['lng'] ) 
+				- 
+				radians($myLng) 
+			) 
+			+ 
+			sin(radians($myLat)) 
+			* 
+			sin(radians(coords['lat'])) 
+		) 
+	) AS distance";
+}
 $myQuery = new WP_Query( $args );
 ?>
 <?php if ( $myQuery->have_posts() ) while ( $myQuery->have_posts() ) : $myQuery->the_post(); ?>
@@ -136,6 +179,7 @@ $myQuery = new WP_Query( $args );
 					</div><!-- .entry-meta -->
 
 					<div class="entry-content">
+						<?php print_r($post); ?>
 						<?php the_content(); ?>
 						<?php the_meta(); ?>
 						<?php wp_link_pages( array( 'before' => '<div class="page-link">' . __( 'Pages:', 'twentyten' ), 'after' => '</div>' ) ); ?>
