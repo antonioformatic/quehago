@@ -1,222 +1,38 @@
-<h1>Loop de Actividades modificado:</h1>
-<?php
-$current_user = wp_get_current_user();
-$user_id = $current_user->ID;
-$filter = get_user_meta( $user_id, "qh_filter", true); 
-echo "Filtro:<p />";
-print_r($filter);
-echo "<p />-------------------------------------------------------------";
-/*
-	Campos del array qh-filter que es un metadato del usuario. 
-	Va todo el array en un solo texto, serializado.
-	 date-min         
-	 date-max         
-	 time-min         
-	 time-max         
-	 price-min        
-	 price-max        
-	 map-center       
-	 map-radio        
-	 organizer        
-	 categories       
-	 participants           
-
-	Metadatos de post que se aplican a cada actividad:
-	   qh-date
-	   qh-time
-	   qh-price
-	   qh-map-center
-	   qh-map-radio
-	   qh-organizer
-
-	Taxonomías de post que se aplican a cada actividad:
-	   categories
-	   participants 
-*/
-$meta_query =  array(
-	'relation' => 'AND'
-);
-if($filter[0]['dateMin'] != ''){
-	$meta_query[] = array( 
-		'key'     => 'qh_fecha',
-		'value'   => $filter[0]['dateMin'],
-		'type'    => 'DATE',
-		'compare' => '>='
-	);
-}
-if($filter[0]['dateMax'] != ''){
-	$meta_query[] = array(
-		'key'     => 'qh_fecha',
-		'value'   => $filter[0]['dateMax'],
-		'type'    => 'DATE',
-		'compare' => '<='
-	);
-}
-if($filter[0]['timeMin'] != ''){
-	$meta_query[] = array( 
-		'key'     => 'qh_hora',
-		'value'   => $filter[0]['timeMin'],
-		'type'    => 'TIME',
-		'compare' => '>='
-	);
-}
-if($filter[0]['timeMax'] != ''){
-	$meta_query[] = array(
-		'key'     => 'qh_hora',
-		'value'   => $filter[0]['timeMax'],
-		'type'    => 'TIME',
-		'compare' => '<='
-	);
-}
-if($filter[0]['priceMin'] != 0){
-	$meta_query[] = array( 
-		'key'     => 'qh_price',
-		'value'   => $filter[0]['priceMin'],
-		'type'    => 'NUMERIC',
-		'compare' => '>='
-	);
-}
-if($filter[0]['priceMax'] != 0){
-	$meta_query[] = array(
-		'key'     => 'qh_price',
-		'value'   => $filter[0]['priceMax'],
-		'type'    => 'NUMERIC',
-		'compare' => '<='
-	);
-}
-if($filter[0]['organizer'] != ''){
-	$meta_query[] = array(
-		'key'     => 'qh_organizer',
-		'value'   => $filter[0]['organizer'],
-		'type'    => 'TEXT',
-		'compare' => '=='
-	);
-}
-
-$tax_query = array(
-	'relation' => 'AND' 
-);
-if($filter[0]['categories'] != ''){
-	$tax_query[] = array(
-		'taxonomy' => 'category',
-		'terms' => array($filter[0]['categories']),
-		'field' => 'slug',
-	);
-}
-if($filter[0]['participants'] != ''){
-	$tax_query[] = array(
-		'taxonomy' => 'participants',
-		'terms' => array($filter[0]['participants']),
-		'field' => 'slug',
-	);
-}
-
-$args = array(
-	'post_type'  => 'post',
-	'meta_query' => $meta_query,
-	'tax_query'  => $tax_query
-);
-echo "Args: <p />";
-print_r($args);
-echo "<p />----------------------------------------------------------";
-
-
-add_filter('posts_where_paged', 'miWhere' );
-function miWhere( $where) {
-	return $where . " and wp_postmeta.meta_key = 'qh_position'";
-}
-add_filter('posts_join_paged', 'miJoin' );
-function miJoin( $joins) {
-	global $wpdb;
-	$new_joins = array(
-		"LEFT JOIN wp_postmeta ON wp_postmeta.post_id = wp_posts.ID",
-		$joins
-	);
-	return implode( ' ', $new_joins);
-}
-add_filter('posts_fields', 'miFields' );
-
-function miFields( $fields) {
-	$myLat = 10;
-	$myLng = 20;
-	return $fields
-	.", wp_postmeta.meta_key "
-	.", wp_postmeta.meta_value as coords" ;
-	.",( 
-		6371
-		* 
-		acos( 
-			cos( radians($myLat) ) 
-			* 
-			cos( radians( coords['lat'] ) ) 
-			* 
-			cos( 
-				radians( coords['lng'] ) 
-				- 
-				radians($myLng) 
-			) 
-			+ 
-			sin(radians($myLat)) 
-			* 
-			sin(radians(coords['lat'])) 
-		) 
-	) AS distance";
-}
-$myQuery = new WP_Query( $args );
-?>
-<?php if ( $myQuery->have_posts() ) while ( $myQuery->have_posts() ) : $myQuery->the_post(); ?>
-
-				<div id="nav-above" class="navigation">
-					<div class="nav-previous"><?php previous_post_link( '%link', '<span class="meta-nav">' . _x( '&larr;', 'Previous post link', 'twentyten' ) . '</span> %title' ); ?></div>
-					<div class="nav-next"><?php next_post_link( '%link', '%title <span class="meta-nav">' . _x( '&rarr;', 'Next post link', 'twentyten' ) . '</span>' ); ?></div>
-				</div><!-- #nav-above -->
-
-				<div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
-					<h1 class="entry-title"><?php the_title(); ?></h1>
-
-					<div class="entry-meta">
-						<?php twentyten_posted_on(); ?>
-					</div><!-- .entry-meta -->
-
-					<div class="entry-content">
-						<?php print_r($post); ?>
-						<?php the_content(); ?>
-						<?php the_meta(); ?>
-						<?php wp_link_pages( array( 'before' => '<div class="page-link">' . __( 'Pages:', 'twentyten' ), 'after' => '</div>' ) ); ?>
-					</div><!-- .entry-content -->
-
-<?php if ( get_the_author_meta( 'description' ) ) : // If a user has filled out their description, show a bio on their entries  ?>
-					<div id="entry-author-info">
-						<div id="author-avatar">
-							<?php echo get_avatar( get_the_author_meta( 'user_email' ), apply_filters( 'twentyten_author_bio_avatar_size', 60 ) ); ?>
-						</div><!-- #author-avatar -->
-						<div id="author-description">
-							<h2><?php printf( __( 'About %s', 'twentyten' ), get_the_author() ); ?></h2>
-							<?php the_author_meta( 'description' ); ?>
-							<div id="author-link">
-								<a href="<?php echo get_author_posts_url( get_the_author_meta( 'ID' ) ); ?>" rel="author">
-									<?php printf( __( 'View all posts by %s <span class="meta-nav">&rarr;</span>', 'twentyten' ), get_the_author() ); ?>
-								</a>
-							</div><!-- #author-link	-->
-						</div><!-- #author-description -->
-					</div><!-- #entry-author-info -->
-<?php endif; ?>
-
-					<div class="entry-utility">
-						<?php twentyten_posted_in(); ?>
-						<?php edit_post_link( __( 'Edit', 'twentyten' ), '<span class="edit-link">', '</span>' ); ?>
-					</div><!-- .entry-utility -->
-				</div><!-- #post-## -->
-
-				<div id="nav-below" class="navigation">
-					<div class="nav-previous"><?php previous_post_link( '%link', '<span class="meta-nav">' . _x( '&larr;', 'Previous post link', 'twentyten' ) . '</span> %title' ); ?></div>
-					<div class="nav-next"><?php next_post_link( '%link', '%title <span class="meta-nav">' . _x( '&rarr;', 'Next post link', 'twentyten' ) . '</span>' ); ?></div>
-				</div><!-- #nav-below -->
-
-				<?php comments_template( '', true ); ?>
-
-<?php endwhile; // end of the loop. ?>
 <?php 
-	/*NO SE SI SE NECESITA ESTO AQUI!!!!!*/
-	wp_reset_postdata(); 
-?>
+	global $myQuery;
+	if ( $myQuery->have_posts() ) while ( $myQuery->have_posts() ) : $myQuery->the_post(); ?>
+	<div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+		<h1 class="entry-title"><?php the_title(); ?></h1>
+		<div class="entry-content">
+			<?php the_content(); ?>
+			<?php
+				$datos = get_post_custom($post->ID);
+				echo "<br />Fecha:" .$datos['qh_date'][0];
+				echo "<br />Hora:" .$datos['qh_time'][0];
+				echo "<br />Precio:" .$datos['qh_price'][0];
+				echo "<br />Lugar:" .$datos['qh_place'][0];
+				echo "<br />Organizador:" .$datos['qh_organizer'][0];
+			?>
+			<?php 
+				echo "<br />Temas:<ul>";
+				foreach((get_the_category()) as $category) { 
+					echo '<li>'.$category->cat_name ."</li>"; 
+				} 
+				echo "</ul>";
+			?>
+			<?php
+				$posttags = get_the_tags();
+				if ($posttags) {
+					echo "Participantes:<br />";
+					echo "<ul>";
+					foreach($posttags as $tag) {
+						echo '<li>'. $tag->name . '</li>'; 
+					}
+					echo "</ul>";
+				}
+			?>
+		</div><!-- .entry-content -->
+	</div><!-- #post-## -->
+	<?php comments_template( '', true ); ?>
+<?php endwhile; // end of the loop. ?>
+<?php wp_reset_query() ?>

@@ -1,4 +1,9 @@
 <?php
+add_action('template_redirect', 'add_my_script');
+ 
+function add_my_script() {
+	wp_enqueue_script('my-script', content_url('themes/formatic/my-script.js'), array('jquery'), '1.0', true);
+}
 /**
  * Add field type: 'taxonomy'
  *
@@ -101,8 +106,8 @@ if ( !class_exists( 'RWMB_Location_Field' ) ) {
 		 * @param $field
 		 * @param $old
 		 * @param $new
-		 * Cuando salva el campo va a google para geolocalizarlo y agrega un meta
-		 * llamado qh_position con las coordenadas del sitio
+		 * Cuando salva el campo va a google para geolocalizarlo y agrega unos metas
+		 * llamados qh_lat y qh_lng con las coordenadas del sitio
 		 */
 		static function save( $new, $old, $post_id, $field ) {
 			$name = $field['id'];
@@ -122,7 +127,8 @@ if ( !class_exists( 'RWMB_Location_Field' ) ) {
 			$url = "http://maps.google.com/maps/geo?output=json&key=".$key."&q=".$lugar;
 			$ret = wp_remote_get($url);
 			$datos = json_decode($ret['body']);
-			update_post_meta($post_id, "qh_position", $datos->Placemark[0]->Point->coordinates);
+			update_post_meta($post_id, "qh_lat", $datos->Placemark[0]->Point->coordinates[0]);
+			update_post_meta($post_id, "qh_lng", $datos->Placemark[0]->Point->coordinates[1]);
 		}
 	}
 }
@@ -209,6 +215,29 @@ $meta_boxes[] = array(
 			'id' => $prefix . 'time',
 			'type' => 'time',                // Field type: time
 			'format' => 'hh:mm:ss'           // Time format, default hh:mm. Optional. See: http://goo.gl/hXHWz
+		)
+	)
+);
+
+$meta_boxes[] = array(
+	'id' => 'otra',              // Meta box id, unique per meta box
+	'title' => 'Información',             // Meta box title
+	'pages' => array('page-publicar'), // Post types, accept custom post types as well, default is array('post'); optional
+	'context' => 'normal',                // Where the meta box appear: normal (default), advanced, side; optional
+	'priority' => 'high',                 // Order of meta box: high (default), low; optional
+
+	'fields' => array(                    // List of meta fields
+		array(
+			'name' => 'Organizador',
+			'id' => $prefix . 'organizer',
+			'type' => 'text',               // File type: date
+			'std' => ''                   // Default value, optional
+		),
+		array(
+			'name' => 'Precio',
+			'id' => $prefix . 'price',
+			'type' => 'text',               // File type: date
+			'std' => '0'          // Date format, default yy-mm-dd. Optional. See: http://goo.gl/po8vf
 		)
 	)
 );
