@@ -1,6 +1,17 @@
 <?php
 get_header();
 ?>
+
+<?php 
+	add_meta_box( 
+		$this->meta_box['id'], 
+		$this->meta_box['title'], 
+		array( &$this, 'show' ), 
+		$page, 
+		$this->meta_box['context'], 
+		$this->meta_box['priority'] 
+	);
+?>
 <h2><?php _e('Categorías:'); bloginfo('url');?></h2>
 <form action="" method="get">
 	<div>

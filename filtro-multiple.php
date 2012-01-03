@@ -44,6 +44,7 @@ $current_user = wp_get_current_user();
 $user_id = $current_user->ID;
 $filter = get_user_meta( $user_id, "qh_filter", true); 
 
+// Filtros para los metadatos:
 $meta_query =  array(
 	'relation' => 'AND'
 );
@@ -105,6 +106,8 @@ if($filter[0]['organizer'] != ''){
 	);
 }
 
+
+//Filtros para las taxonomías:
 $tax_query = array(
 	'relation' => 'AND' 
 );
@@ -124,7 +127,7 @@ if($filter[0]['participants'] != ''){
 }
 
 $args = array(
-	'post_type'  => 'post',
+	'post_type'  => 'activity',
 	'meta_query' => $meta_query,
 	'tax_query'  => $tax_query
 );

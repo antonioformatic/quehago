@@ -45,3 +45,14 @@ Cosas que podemos filtrar:
 	-Mis convocatorias
 	-Mi agenda
 
+Los demás posts que vamos a crear son:
+	-Agenda: posts de la categoría "agenda" en los que el usuario dijo que asisitiría.
+		Llevan un metadato que indica a qué post se refiere
+		El filtro para verlos es categoría = "agenda" y autor = "usuario"
+	-Mis convocatorias: post de categoría "convocatoria" cuyo autor es el usuario
+		El filtro para verlos es categoría = "convocatoria" y autor = "usuario"
+	-Mis intereses: Posts de la categoría "interes" por cada tema en el que el usuario está interesado.
+		Llevan un metadato que es el tema en el que está interesado.
+		El filtro para verlos es categoría = "interes" y autor = "usuario"
+		
+

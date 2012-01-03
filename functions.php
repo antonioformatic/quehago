@@ -4,11 +4,7 @@ add_action('template_redirect', 'add_my_script');
 function add_my_script() {
 	wp_enqueue_script('my-script', content_url('themes/formatic/my-script.js'), array('jquery'), '1.0', true);
 }
-/**
- * Add field type: 'taxonomy'
- *
- * Note: The class name must be in format "RWMB_{$field_type}_Field"
- */
+
 if ( !class_exists( 'RWMB_Taxonomy_Field' ) ) {
 	class RWMB_Taxonomy_Field {
 
@@ -46,31 +42,10 @@ if ( !class_exists( 'RWMB_Taxonomy_Field' ) ) {
 		 * @return string
 		 */
 		static function html( $html, $meta, $field ) {
-			global $post;
+				$idObj = get_category_by_slug('actividad'); 
+				$id = $idObj->term_id;
+				return wp_dropdown_categories("echo=0&child_of=$id&hide_empty=0&hierarchical=1");
 
-			$options = $field['options'];
-
-			$meta = wp_get_post_terms( $post->ID, $options['taxonomy'], array( 'fields' => 'ids' ) );
-			$meta = is_array( $meta ) ? $meta : ( array ) $meta;
-			$terms = get_terms( $options['taxonomy'], $options['args'] );
-
-			$html = '';
-			// Checkbox_list
-			if ( 'checkbox_list' == $options['type'] ) {
-				foreach ( $terms as $term ) {
-					$html .= "<input type='checkbox' name='{$field['id']}[]' value='{$term->term_id}'" . checked( in_array( $term->term_id, $meta ), true, false ) . " /> {$term->name}<br/>";
-				}
-			}
-			// Select
-			else {
-				$html .= "<select name='{$field['id']}" . ( $field['multiple'] ? "[]' multiple='multiple' style='height: auto;'" : "'" ) . ">";
-				foreach ( $terms as $term ) {
-					$html .= "<option value='{$term->term_id}'" . selected( in_array( $term->term_id, $meta ), true, false ) . ">{$term->name}</option>";
-				}
-				$html .= "</select>";
-			}
-
-			return $html;
 		}
 
 		/**
@@ -142,6 +117,7 @@ if ( !class_exists( 'RWMB_Location_Field' ) ) {
  */
 $prefix = 'qh_';
 
+
 // Agrego $getTermParms para que busque solo los tipos de actividad:
 // Luego se la mando como parámetro al campo de tipo taxonomy
 $idObj = get_category_by_slug('actividad'); 
@@ -169,7 +145,7 @@ $meta_boxes = array( );
 $meta_boxes[] = array(
 	'id' => 'activity-info',              // Meta box id, unique per meta box
 	'title' => 'Información',             // Meta box title
-	'pages' => array( 'post'),            // Post types, accept custom post types as well, default is array('post'); optional
+	'pages' => array('post'),            // Post types, accept custom post types as well, default is array('post'); optional
 	'context' => 'normal',                // Where the meta box appear: normal (default), advanced, side; optional
 	'priority' => 'high',                 // Order of meta box: high (default), low; optional
 
@@ -182,51 +158,17 @@ $meta_boxes[] = array(
 			'std' => ''                   // Default value, optional
 		),
 		array(
-			'name' => 'Organizador',
-			'id' => $prefix . 'organizer',
-			'type' => 'text',               // File type: date
-			'std' => ''                   // Default value, optional
-		),
-		array(
-			'name' => 'Precio',
-			'id' => $prefix . 'price',
-			'type' => 'text',               // File type: date
-			'std' => '0'          // Date format, default yy-mm-dd. Optional. See: http://goo.gl/po8vf
-		),
-		array(
 			'name' => 'Fecha',
 			'id' => $prefix . 'date',
 			'type' => 'date',               // File type: date
 			'format' => 'dd-mm-yy'          // Date format, default yy-mm-dd. Optional. See: http://goo.gl/po8vf
 		),
 		array(
-			'name' => 'Categorías',
-			'id' => $prefix . 'categories',
-			'type' => 'taxonomy',           // File type: taxonomy
-			'options' => array(
-				'taxonomy' => 'category',   // Taxonomy name
-				'type' => 'checkbox_list',  // How to show taxonomy: 'checkbox_list' (default) or 'select'. Optional
-				'args' => $getTermParms     // Additional arguments for get_terms() function
-			),
-			'desc' => 'Categorías a las que pertenece'
-		),
-		array(
 			'name' => 'Hora',
 			'id' => $prefix . 'time',
 			'type' => 'time',                // Field type: time
 			'format' => 'hh:mm:ss'           // Time format, default hh:mm. Optional. See: http://goo.gl/hXHWz
-		)
-	)
-);
-
-$meta_boxes[] = array(
-	'id' => 'otra',              // Meta box id, unique per meta box
-	'title' => 'Información',             // Meta box title
-	'pages' => array('page-publicar'), // Post types, accept custom post types as well, default is array('post'); optional
-	'context' => 'normal',                // Where the meta box appear: normal (default), advanced, side; optional
-	'priority' => 'high',                 // Order of meta box: high (default), low; optional
-
-	'fields' => array(                    // List of meta fields
+		),
 		array(
 			'name' => 'Organizador',
 			'id' => $prefix . 'organizer',
@@ -238,10 +180,20 @@ $meta_boxes[] = array(
 			'id' => $prefix . 'price',
 			'type' => 'text',               // File type: date
 			'std' => '0'          // Date format, default yy-mm-dd. Optional. See: http://goo.gl/po8vf
+		),
+		array(
+			'name' => 'Categories',
+			'id' => $prefix . 'cats',
+			'type' => 'taxonomy',           // File type: taxonomy
+			'options' => array(
+				'taxonomy' => 'category',   // Taxonomy name
+				'type' => 'checkbox_list',  // How to show taxonomy: 'checkbox_list' (default) or 'select'. Optional
+				'args' => array( ),         // Additional arguments for get_terms() function
+			),
+			'desc' => 'Choose One Category'
 		)
 	)
 );
-
 
 /**
  * Register meta boxes
