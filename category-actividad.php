@@ -6,7 +6,8 @@
 				if ( ! empty( $category_description ) ){
 					echo '<div class="archive-meta">' . $category_description . '</div>';
 				}
-				$myQuery = '';
+				$meta_query=array();
+				$tax_query=array();
 				get_template_part( 'filtro', 'multiple');
 				get_template_part( 'content', 'actividad');
 			?>

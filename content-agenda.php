@@ -1,34 +1,49 @@
-<h1>Loop de Agenda:</h1>
-<?php if ( have_posts() ) while ( have_posts() ) : the_post(); ?>
-
-				<div id="nav-above" class="navigation">
-					<div class="nav-previous"><?php previous_post_link( '%link', '<span class="meta-nav">' . _x( '&larr;', 'Previous post link', 'twentyten' ) . '</span> %title' ); ?></div>
-					<div class="nav-next"><?php next_post_link( '%link', '%title <span class="meta-nav">' . _x( '&rarr;', 'Next post link', 'twentyten' ) . '</span>' ); ?></div>
-				</div><!-- #nav-above -->
-
-				<div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
-					<h1 class="entry-title"><?php the_title(); ?></h1>
-
-					<div class="entry-meta">
-						<?php twentyten_posted_on(); ?>
-					</div><!-- .entry-meta -->
-
-					<div class="entry-content">
-						<?php the_content(); ?>
-						<?php wp_link_pages( array( 'before' => '<div class="page-link">' . __( 'Pages:', 'twentyten' ), 'after' => '</div>' ) ); ?>
-					</div><!-- .entry-content -->
-
-					<div class="entry-utility">
-						<?php twentyten_posted_in(); ?>
-						<?php edit_post_link( __( 'Edit', 'twentyten' ), '<span class="edit-link">', '</span>' ); ?>
-					</div><!-- .entry-utility -->
-				</div><!-- #post-## -->
-
-				<div id="nav-below" class="navigation">
-					<div class="nav-previous"><?php previous_post_link( '%link', '<span class="meta-nav">' . _x( '&larr;', 'Previous post link', 'twentyten' ) . '</span> %title' ); ?></div>
-					<div class="nav-next"><?php next_post_link( '%link', '%title <span class="meta-nav">' . _x( '&rarr;', 'Next post link', 'twentyten' ) . '</span>' ); ?></div>
-				</div><!-- #nav-below -->
-
-				<?php comments_template( '', true ); ?>
-
+<?php 
+	global $meta_query;
+	global $tax_query;
+	$current_user = wp_get_current_user();
+	$user_id = $current_user->ID;
+	$filter = get_user_meta( $user_id, "qh_filter", true); 
+	$args= array(
+		'post_type'  => 'post',
+		'author'     => $user_id,
+		'meta_query' => $meta_query,
+		'tax_query'  => $tax_query
+	);
+	$myQuery = new WP_Query( $args );
+	if ( $myQuery->have_posts() ) while ( $myQuery->have_posts() ) : $myQuery->the_post(); ?>
+	<div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+		<h1 class="entry-title"><?php the_title(); ?></h1>
+		<div class="entry-content">
+			<?php the_content(); ?>
+			<?php
+				$datos = get_post_custom($post->ID);
+				echo "<br />Fecha:" .$datos['qh_date'][0];
+				echo "<br />Hora:" .$datos['qh_time'][0];
+				echo "<br />Precio:" .$datos['qh_price'][0];
+				echo "<br />Lugar:" .$datos['qh_place'][0];
+				echo "<br />Organizador:" .$datos['qh_organizer'][0];
+			?>
+			<?php 
+				echo "<br />Temas:<ul>";
+				foreach((get_the_category()) as $category) { 
+					echo '<li>'.$category->cat_name ."</li>"; 
+				} 
+				echo "</ul>";
+			?>
+			<?php
+				$posttags = get_the_tags();
+				if ($posttags) {
+					echo "Participantes:<br />";
+					echo "<ul>";
+					foreach($posttags as $tag) {
+						echo '<li>'. $tag->name . '</li>'; 
+					}
+					echo "</ul>";
+				}
+			?>
+		</div><!-- .entry-content -->
+	</div><!-- #post-## -->
+	<?php comments_template( '', true ); ?>
 <?php endwhile; // end of the loop. ?>
+<?php wp_reset_query() ?>

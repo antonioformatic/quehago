@@ -1,5 +1,12 @@
 <?php 
-	global $myQuery;
+	global $meta_query;
+	global $tax_query;
+	$args= array(
+		'post_type'  => 'post',
+		'meta_query' => $meta_query,
+		'tax_query'  => $tax_query
+	);
+	$myQuery = new WP_Query( $args );
 	if ( $myQuery->have_posts() ) while ( $myQuery->have_posts() ) : $myQuery->the_post(); ?>
 	<div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 		<h1 class="entry-title"><?php the_title(); ?></h1>
