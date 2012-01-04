@@ -1,18 +1,4 @@
-<?php 
-	global $meta_query;
-	global $tax_query;
-	$tax_query[] = array(
-		'taxonomy' => 'category',
-		'terms' => array('actividad'),
-		'field' => 'slug',
-	);
-	$args= array(
-		'post_type'  => 'post',
-		'meta_query' => $meta_query,
-		'tax_query'  => $tax_query
-	);
-	$myQuery = new WP_Query( $args );
-	if ( $myQuery->have_posts() ) while ( $myQuery->have_posts() ) : $myQuery->the_post(); ?>
+<?php get_header(); ?>
 	<div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 		<h1 class="entry-title"><?php the_title(); ?></h1>
 		<div class="entry-content">
@@ -47,11 +33,6 @@
 				<button type="submit">Me gusta</button>
 				<input type="hidden" name="meGusta" />
 			</form>
-		</div><!-- .entry-content -->
-	</div><!-- #post-## -->
-	<?php comments_template( '', true ); ?>
-<?php endwhile; // end of the loop. ?>
-<?php wp_reset_query() ?>
 			<?php
 			if(isset($_GET['meGusta'])){
 				$current_user = wp_get_current_user();
@@ -67,3 +48,7 @@
 				update_post_meta($new_post_id, "qh_like", $post->ID);
 			}
 			?>
+		</div><!-- .entry-content -->
+	</div><!-- #post-## -->
+<?php get_sidebar(); ?>
+<?php get_footer(); ?>

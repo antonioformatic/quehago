@@ -48,12 +48,30 @@
 $current_user = wp_get_current_user();
 $user_id = $current_user->ID;
 $filter = get_user_meta( $user_id, "qh_filter", true); 
-
+if($filter == ''){
+	$filter = array(
+		array(
+			'dateMin'     =>'',
+			'dateMax'     =>'',
+			'timeMin'     =>'',
+			'timeMax'     =>'',
+			'priceMin'    =>'',
+			'priceMax'    =>'',
+			'mapCenter'   =>'',
+			'mapRadio'    =>'',
+			'mapLat'      =>'',
+			'mapLng'      =>'',
+			'organizer'   =>'',
+			'categories'  =>'',
+			'participants'=>''
+		)
+	);
+	update_user_meta($user_id, "qh_filter", $filter); 
+}
 global $meta_query;
 global $tax_query;
-
 // Filtros para los metadatos:
-if($filter != ''){
+if(isset($filter[0])){
 	if($filter[0]['dateMin'] != ''){
 		$meta_query[] = array( 
 			'key'     => 'qh_fecha',
@@ -139,7 +157,7 @@ if($filter != ''){
 			$filter = get_user_meta( $user_id, "qh_filter", true); 
 			$radio = $filter[0]['mapRadio'];
 			if($groupBy == ''){
-				$groupBy = " wp_posts.ID ";
+				$groupBy = " qh_posts.ID ";
 			}
 			return $groupBy . " having distance <= $radio";
 			
@@ -149,19 +167,19 @@ if($filter != ''){
 			global $wpdb;
 			$new_joins = array(
 				"left join  ( 
-				   select wp_posts.ID as id ,wp_postmeta.meta_value as lat 
-				   from wp_postmeta 
+				   select qh_posts.ID as id ,qh_postmeta.meta_value as lat 
+				   from qh_postmeta 
 				   join 
-						wp_posts on post_id = wp_posts.ID 
+						qh_posts on post_id = qh_posts.ID 
 						 where meta_key = 'qh_lat' 
-				) as metaLat on metaLat.id = wp_posts.ID",
+				) as metaLat on metaLat.id = qh_posts.ID",
 				"left join  ( 
-				   select wp_posts.ID as id ,wp_postmeta.meta_value as lng 
-				   from wp_postmeta 
+				   select qh_posts.ID as id ,qh_postmeta.meta_value as lng 
+				   from qh_postmeta 
 				   join 
-						wp_posts on post_id = wp_posts.ID 
+						qh_posts on post_id = qh_posts.ID 
 						 where meta_key = 'qh_lng' 
-				) as metaLng on metaLng.id = wp_posts.ID",
+				) as metaLng on metaLng.id = qh_posts.ID",
 				$joins
 			);
 			return implode( ' ', $new_joins);
